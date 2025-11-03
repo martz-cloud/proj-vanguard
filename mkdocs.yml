@@ -1,0 +1,38 @@
+site_name: <REPO_DISPLAY_NAME> Docs
+site_description: Documentation for <REPO_DISPLAY_NAME>
+site_url: https://<ORG>.github.io/<REPO_NAME>/
+repo_name: <ORG>/<REPO_NAME>
+repo_url: https://github.com/<ORG>/<REPO_NAME>
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.expand
+    - navigation.footer
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+  language: en
+nav:
+  - Home: index.md
+  - Guides:
+      - Setup: guides/setup.md
+      - Runbooks: guides/runbooks.md
+  - Reference:
+      - Mappings: reference/mappings.md
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/<ORG>
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.highlight
