@@ -22,7 +22,7 @@
   "links": {
     "repo": "https://github.com/martz-cloud/proj-vanguard",
     "readme": "README.md",
-    "docs": "docs/"
+    "docs": "https://martz-cloud.github.io/proj-vanguard/"
   },
   "tags": [
     "healthcare-it",
