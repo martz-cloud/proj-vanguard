@@ -1,4 +1,120 @@
 {
-  "_placeholder": true,
-  "note": "Export your baseline JSON here"
+  "metadata": {
+    "name": "WindowsSecurityBaseline",
+    "version": "1.0.0",
+    "updated": "2025-11-03",
+    "owner": "Platform Engineering",
+    "description": "Windows security baseline aligned to HIPAA with mappings to common NIST controls."
+  },
+  "scope": {
+    "rings": ["Pilot", "Broad"],
+    "deviceFilters": [
+      { "name": "Win11-Modern", "query": "device.osVersion -startsWith \"10.0.2\" OR device.osVersion -startsWith \"10.0.3\"" }
+    ]
+  },
+  "mappings": {
+    "hipaa": ["164.312(a)(2)(iv)", "164.312(c)(1)", "164.312(d)"],
+    "nist": ["SC-13", "SC-28", "IA-2", "CM-6"]
+  },
+  "settings": [
+    {
+      "category": "DiskEncryption",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "BitLocker_OSDrive_RequireDeviceEncryption", "value": true },
+        { "key": "BitLocker_OSDrive_EncryptMethod", "value": "XtsAes256" },
+        { "key": "BitLocker_RecoveryKeyEscrowToAAD", "value": true },
+        { "key": "BitLocker_AllowStandardUsersToEnable", "value": false }
+      ]
+    },
+    {
+      "category": "Firewall",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "Firewall_EnableDomain", "value": true },
+        { "key": "Firewall_EnablePrivate", "value": true },
+        { "key": "Firewall_EnablePublic", "value": true },
+        { "key": "Firewall_BlockAllInbound_Public", "value": true }
+      ]
+    },
+    {
+      "category": "WindowsDefender",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "Defender_RealTimeProtection", "value": true },
+        { "key": "Defender_CloudDeliveredProtection", "value": true },
+        { "key": "Defender_AutomaticSampleSubmission", "value": "Safe" },
+        { "key": "Defender_TamperProtection", "value": "Enabled" },
+        { "key": "Defender_PUAProtection", "value": "Block" }
+      ]
+    },
+    {
+      "category": "SmartScreen",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "SmartScreen_Enable", "value": true },
+        { "key": "SmartScreen_BlockUnverifiedApps", "value": true },
+        { "key": "SmartScreen_BlockBadSites", "value": true }
+      ]
+    },
+    {
+      "category": "LocalAdmin",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "BuiltInAdmin_Enable", "value": false },
+        { "key": "LAPS_Enable", "value": true },
+        { "key": "LAPS_PasswordComplexity", "value": "LargeAlphaNumericSpecial" },
+        { "key": "LAPS_PasswordAgeDays", "value": 30 }
+      ]
+    },
+    {
+      "category": "WindowsUpdateForBusiness",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "WUFB_QualityUpdates_AutoInstall", "value": true },
+        { "key": "WUFB_FeatureDeferralDays", "value": 30 },
+        { "key": "WUFB_QualityDeferralDays", "value": 7 },
+        { "key": "WUFB_RestartGracePeriodHours", "value": 8 }
+      ]
+    },
+    {
+      "category": "CredentialGuard",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "CredentialGuard_Enable", "value": "EnabledWithUEFI" }
+      ]
+    },
+    {
+      "category": "ExploitProtection",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "ExploitProtection_UseRecommendedSettings", "value": true }
+      ]
+    },
+    {
+      "category": "Audit",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "Audit_LogonEvents_Success", "value": true },
+        { "key": "Audit_LogonEvents_Failure", "value": true },
+        { "key": "Audit_ObjectAccess_Success", "value": true },
+        { "key": "Audit_ObjectAccess_Failure", "value": true }
+      ]
+    }
+  ],
+  "compliance": {
+    "rules": [
+      { "name": "RequireBitLocker", "expression": "device.bitLockerStatus == \"on\"" },
+      { "name": "FirewallOnAllProfiles", "expression": "device.firewallProfiles == \"all_on\"" },
+      { "name": "DefenderHealthy", "expression": "device.defenderStatus == \"healthy\"" }
+    ],
+    "actions": [
+      { "name": "MarkNonCompliantIfEncryptionOff", "rule": "RequireBitLocker" },
+      { "name": "MarkNonCompliantIfFirewallOff", "rule": "FirewallOnAllProfiles" }
+    ]
+  },
+  "assignments": [
+    { "ring": "Pilot", "include": ["Group:Win11-Modern-Pilot"], "exclude": [] },
+    { "ring": "Broad", "include": ["Group:Win11-Modern"], "exclude": ["Group:Sensitive-Exception"] }
+  ]
 }
