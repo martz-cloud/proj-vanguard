@@ -6,5 +6,5 @@ This site documents the project, with quick start guides, runbooks, and referenc
     Use the sidebar to navigate. Search is available in the top bar.
 
 ## Quick links
-- **Repository:** <https://github.com/<ORG>/<REPO_NAME>>
-- **Issues:** <https://github.com/<ORG>/<REPO_NAME>/issues>
+- **Repository:** <https://github.com/martz-cloud/proj-vanguard>
+- **Issues:** <https://github.com/martz-cloud/proj-vanguard/issues>
