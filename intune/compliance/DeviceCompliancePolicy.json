@@ -1,4 +1,99 @@
 {
-  "_placeholder": true,
-  "note": "Intune compliance policy export"
+  "metadata": {
+    "name": "WindowsCompliancePolicy",
+    "platform": "windows10AndLater",
+    "version": "1.0.0",
+    "updated": "2025-11-03",
+    "owner": "Platform Engineering",
+    "description": "Windows device compliance policy aligned to HIPAA/NIST goals. Requires encryption, firewall, Defender health, and minimum OS levels."
+  },
+  "scope": {
+    "rings": ["Pilot", "Broad"],
+    "deviceFilters": [
+      { "name": "Win11-Modern", "query": "device.osEdition == \"Windows 11\" AND device.managementType == \"MDM\"" }
+    ],
+    "gracePeriodDays": 0,
+    "complianceStatusValidityDays": 30
+  },
+  "mappings": {
+    "hipaa": ["164.312(a)(2)(iv)", "164.312(c)(1)"],
+    "nist": ["SC-28", "CM-6", "SI-3"]
+  },
+  "settings": [
+    {
+      "category": "OSVersion",
+      "items": [
+        { "key": "MinimumOSVersion", "value": "10.0.22000.0" },
+        { "key": "MinimumOSBuild",   "value": "22000" }
+      ]
+    },
+    {
+      "category": "SecurityHealth",
+      "items": [
+        { "key": "RequireSecureBoot",            "value": true },
+        { "key": "RequireCodeIntegrity",         "value": true },
+        { "key": "RequireTrustedPlatformModule", "value": true }
+      ]
+    },
+    {
+      "category": "Encryption",
+      "items": [
+        { "key": "RequireBitLocker", "value": true }
+      ]
+    },
+    {
+      "category": "FirewallAndAV",
+      "items": [
+        { "key": "RequireFirewall",                  "value": true },
+        { "key": "RequireAntivirus",                 "value": true },
+        { "key": "RequireAntispyware",               "value": true },
+        { "key": "DefenderSignatureUpToDate",        "value": true },
+        { "key": "RealTimeMonitoringEnabled",        "value": true }
+      ]
+    },
+    {
+      "category": "Updates",
+      "items": [
+        { "key": "RequireAutomaticUpdatesEnabled", "value": true }
+      ]
+    },
+    {
+      "category": "ThreatLevel",
+      "items": [
+        { "key": "MaxAllowedDeviceThreatLevel", "value": "low" }
+      ]
+    }
+  ],
+  "compliance": {
+    "rules": [
+      { "name": "OSVersionMin",       "expression": "device.osVersion >= \"10.0.22000.0\"" },
+      { "name": "SecureBoot",         "expression": "device.secureBoot == true" },
+      { "name": "CodeIntegrity",      "expression": "device.codeIntegrity == true" },
+      { "name": "TPMRequired",        "expression": "device.tpmPresent == true" },
+      { "name": "BitLockerOn",        "expression": "device.bitLockerStatus == \"on\"" },
+      { "name": "FirewallOn",         "expression": "device.firewallProfiles == \"all_on\"" },
+      { "name": "AVHealthy",          "expression": "device.antivirusStatus == \"healthy\"" },
+      { "name": "ASWHealthy",         "expression": "device.antispywareStatus == \"healthy\"" },
+      { "name": "DefenderSigFresh",   "expression": "device.defenderSigAgeHours <= 24" },
+      { "name": "RealtimeProt",       "expression": "device.defenderRealtime == true" },
+      { "name": "AutoUpdates",        "expression": "device.windowsUpdateAutoInstall == true" },
+      { "name": "ThreatLevel",        "expression": "device.threatLevel <= \"low\"" }
+    ],
+    "actions": [
+      { "name": "MarkNonCompliantImmediately", "rule": "*", "graceDays": 0 },
+      { "name": "EmailUser", "rule": "*", "template": "NonCompliantNotice", "repeatDays": 1, "maxSends": 3 },
+      { "name": "NotifyAdmins", "rule": "*", "channel": "operations-alerts" },
+      { "name": "BlockAccessViaCA", "rule": "ThreatLevel" }
+    ],
+    "messages": {
+      "NonCompliantNotice": {
+        "subject": "Your device is not compliant",
+        "body": "Your device is currently out of compliance. Please connect to the network and leave your device powered on. If this persists, contact the service desk."
+      }
+    }
+  },
+  "assignments": [
+    { "ring": "Pilot", "include": ["Group:Win11-Modern-Pilot"], "exclude": [] },
+    { "ring": "Broad", "include": ["Group:Win11-Modern"], "exclude": ["Group:Sensitive-Exception"] }
+  ]
 }
