@@ -1,8 +1,8 @@
-site_name: <REPO_DISPLAY_NAME> Docs
-site_description: Documentation for <REPO_DISPLAY_NAME>
-site_url: https://<ORG>.github.io/<REPO_NAME>/
-repo_name: <ORG>/<REPO_NAME>
-repo_url: https://github.com/<ORG>/<REPO_NAME>
+site_name: Proj-Vanguard Docs
+site_description: Documentation for Proj-Vanguard
+site_url: https://martz-cloud.github.io/proj-vanguard/
+repo_name: martz-cloud/proj-vanguard
+repo_url: https://github.com/martz-cloud/proj-vanguard
 theme:
   name: material
   features:
@@ -23,7 +23,7 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/<ORG>
+      link: https://github.com/martz-cloud
 markdown_extensions:
   - toc:
       permalink: true
