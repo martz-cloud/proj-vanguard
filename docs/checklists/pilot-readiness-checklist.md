@@ -1,6 +1,6 @@
 # Checklist: Pilot Readiness
 
-- [ ] Success criteria defined
+- [ ] Success criteria defined (provisioning time, ticket count, compliance %)
 - [ ] Rollback plan documented
-- [ ] Support schedule staffed
 - [ ] Feedback capture form ready
+- [ ] Stakeholders informed
