@@ -1,4 +1,151 @@
 {
-  "_placeholder": true,
-  "note": "Intune device configuration profile export"
+  "metadata": {
+    "name": "WindowsConfigurationProfile",
+    "platform": "windows10AndLater",
+    "version": "1.0.0",
+    "updated": "2025-11-03",
+    "owner": "Platform Engineering",
+    "description": "Windows configuration profile (Settings Catalog-first) aligning with security, manageability, and audit needs."
+  },
+  "scope": {
+    "rings": ["Pilot", "Broad"],
+    "deviceFilters": [
+      { "name": "Win11-Modern", "query": "device.osEdition == \"Windows 11\" AND device.managementType == \"MDM\"" }
+    ],
+    "scopeTags": ["prod"]
+  },
+  "mappings": {
+    "hipaa": ["164.312(c)(1)", "164.312(d)"],
+    "nist": ["AC-2", "CM-6", "SC-7", "SC-28", "SI-3", "IA-2"]
+  },
+  "settings": [
+    {
+      "category": "BitLocker",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "RequireDeviceEncryption", "value": true },
+        { "key": "OSDriveEncryptionMethod", "value": "XtsAes256" },
+        { "key": "FixedDriveEncryptionMethod", "value": "XtsAes256" },
+        { "key": "RecoveryKeyEscrowToAAD", "value": true },
+        { "key": "AllowStandardUsersToEnable", "value": false }
+      ]
+    },
+    {
+      "category": "Firewall",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "EnableDomainProfile", "value": true },
+        { "key": "EnablePrivateProfile", "value": true },
+        { "key": "EnablePublicProfile", "value": true },
+        { "key": "BlockAllInbound_Public", "value": true },
+        { "key": "NotifyOnListen", "value": true }
+      ]
+    },
+    {
+      "category": "EndpointProtection",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "RealTimeProtection", "value": true },
+        { "key": "CloudDeliveredProtection", "value": true },
+        { "key": "PUAProtection", "value": "Block" },
+        { "key": "TamperProtection", "value": "Enabled" },
+        { "key": "AutomaticSampleSubmission", "value": "Safe" },
+        { "key": "AttackSurfaceReductionRules_Default", "value": "EnableRecommended" }
+      ]
+    },
+    {
+      "category": "SmartScreen",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "WindowsSmartScreen_Enable", "value": true },
+        { "key": "BlockUnverifiedApps", "value": true },
+        { "key": "BlockMaliciousSites", "value": true }
+      ]
+    },
+    {
+      "category": "LocalAdminAndAccounts",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "BuiltInAdministrator_Enable", "value": false },
+        { "key": "LAPS_Enable", "value": true },
+        { "key": "LAPS_PasswordComplexity", "value": "LargeAlphaNumericSpecial" },
+        { "key": "LAPS_PasswordAgeDays", "value": 30 }
+      ]
+    },
+    {
+      "category": "CredentialGuard",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "CredentialGuard_Enable", "value": "EnabledWithUEFI" },
+        { "key": "VirtualizationBasedSecurity", "value": "EnabledWithUMCI" }
+      ]
+    },
+    {
+      "category": "ExploitProtection",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "UseMicrosoftRecommendedDefaults", "value": true }
+      ]
+    },
+    {
+      "category": "WindowsUpdateForBusiness",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "QualityUpdates_AutoInstall", "value": true },
+        { "key": "FeatureUpdateDeferralDays", "value": 30 },
+        { "key": "QualityUpdateDeferralDays", "value": 7 },
+        { "key": "RestartGracePeriodHours", "value": 8 },
+        { "key": "ActiveHoursStart", "value": "08:00" },
+        { "key": "ActiveHoursEnd", "value": "17:00" }
+      ]
+    },
+    {
+      "category": "Audit",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "Audit_Logon_Success", "value": true },
+        { "key": "Audit_Logon_Failure", "value": true },
+        { "key": "Audit_ObjectAccess_Success", "value": true },
+        { "key": "Audit_ObjectAccess_Failure", "value": true }
+      ]
+    },
+    {
+      "category": "BrowserEdge",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "SmartScreen_EnableInEdge", "value": true },
+        { "key": "BlockExtensionsFromUnknownSources", "value": true },
+        { "key": "StartupBoost", "value": false }
+      ]
+    },
+    {
+      "category": "OneDrive",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "KFM_Documents", "value": "RedirectAndSilentlyMove" },
+        { "key": "KFM_Desktop", "value": "RedirectAndSilentlyMove" },
+        { "key": "KFM_Pictures", "value": "RedirectAndSilentlyMove" }
+      ]
+    },
+    {
+      "category": "DeviceRestrictions",
+      "source": "SettingsCatalog",
+      "items": [
+        { "key": "BluetoothAllowed", "value": true },
+        { "key": "AllowUSBStorage", "value": false },
+        { "key": "AllowPowerShellScriptExecution", "value": "SignedOnly" }
+      ]
+    }
+  ],
+  "assignments": [
+    { "ring": "Pilot", "include": ["Group:Win11-Modern-Pilot"], "exclude": [] },
+    { "ring": "Broad", "include": ["Group:Win11-Modern"], "exclude": ["Group:Sensitive-Exception"] }
+  ],
+  "notes": {
+    "importGuidance": [
+      "This document mirrors Settings Catalog choices. When creating in Intune, search for the keys by name and set the values shown here.",
+      "If you maintain multiple variants (e.g., Sensitive role devices), prefer device filters over separate policies to avoid scope overlap.",
+      "Pair this profile with the WindowsSecurityBaseline.json and DeviceCompliancePolicy.json files to keep configuration, compliance, and security aligned."
+    ]
+  }
 }
